@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Gokulraj – backend engineer specialized in Java, Spring Boot, scalable APIs, and distributed systems."
+    />
+    <meta name="theme-color" content="#84cc16" />
+    <title>Gokulraj · backend engineer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,600;0,14..32,800;1,14..32,300&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #84cc16;
+        --accent-soft: #b9f26c;
+        --bg: #030303;
+        --bg-card: #0c0c0c;
+        --text-main: #e5e7eb;
+        --text-muted: #a0a8b7;
+        --border-dim: #1e1e1e;
+        --glow-size: 700px;
+        --grid-size: 42px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text-main);
+        overflow-x: hidden;
+        perspective: 1400px;
+        line-height: 1.6;
+      }
+
+      /* ===== DUAL-GRID BACKGROUND (FINE-TUNED) ===== */
+      .grid-bg,
+      .grid-bg-2 {
+        position: fixed;
+        inset: 0;
+        z-index: -3;
+        pointer-events: none;
+      }
+
+      .grid-bg {
+        background-image: linear-gradient(
+            rgba(132, 204, 22, 0.12) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(132, 204, 22, 0.12) 1px, transparent 1px);
+        background-size: var(--grid-size) var(--grid-size);
+        transform: rotateX(68deg) scale(1.7);
+        animation: drift 32s linear infinite;
+      }
+
+      .grid-bg-2 {
+        background-image: linear-gradient(
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(132, 204, 22, 0.06) 1px, transparent 1px);
+        background-size: 84px 84px;
+        transform: rotateX(72deg) scale(2.2);
+        animation: driftSlow 48s linear infinite reverse;
+        opacity: 0.5;
+      }
+
+      @keyframes drift {
+        0% {
+          background-position: 0 0, 0 0;
+        }
+        100% {
+          background-position: 0 280px, 280px 0;
+        }
+      }
+      @keyframes driftSlow {
+        0% {
+          background-position: 0 0, 0 0;
+        }
+        100% {
+          background-position: 0 -400px, -400px 0;
+        }
+      }
+
+      .fade-layer {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+          circle at 45% 30%,
+          transparent 20%,
+          #030303 95%
+        );
+        z-index: -2;
+      }
+
+      .glow {
+        position: fixed;
+        top: 20%;
+        left: 45%;
+        width: var(--glow-size);
+        height: var(--glow-size);
+        background: radial-gradient(
+          circle,
+          rgba(132, 204, 22, 0.2) 0%,
+          transparent 75%
+        );
+        transform: translate(-50%, -20%);
+        filter: blur(100px);
+        z-index: -1;
+        transition: transform 0.08s ease-out;
+      }
+
+      /* ===== HEADER ===== */
+      header {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 8%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(14px) saturate(180%);
+        border-bottom: 1px solid rgba(132, 204, 22, 0.15);
+        z-index: 100;
+        transition: 0.2s;
+      }
+      header.scrolled {
+        background: #000000dd;
+        border-bottom-color: #84cc1630;
+      }
+
+      .logo {
+        font-weight: 800;
+        font-size: 1.3rem;
+        color: var(--accent);
+        border: 1px solid #84cc1620;
+        padding: 4px 16px;
+        border-radius: 40px;
+        background: #0b0b0b;
+      }
+
+      nav {
+        display: flex;
+        gap: 2rem;
+      }
+      nav a {
+        color: #d1d5db;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        position: relative;
+        padding: 4px 0;
+        transition: 0.2s;
+      }
+      nav a:hover {
+        color: var(--accent-soft);
+      }
+      nav a.active {
+        color: var(--accent-soft);
+      }
+      nav a::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--accent-soft);
+        transition: 0.25s;
+      }
+      nav a:hover::after,
+      nav a.active::after {
+        width: 100%;
+      }
+
+      /* ===== SECTIONS (reveal on scroll) ===== */
+      section {
+        min-height: 100vh;
+        padding: 140px 8% 70px;
+        opacity: 0;
+        transform: translateY(35px);
+        transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.3, 1),
+          transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1);
+      }
+      section.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ===== HERO ===== */
+      .hero h1 {
+        font-size: clamp(3.8rem, 12vw, 6rem);
+        font-weight: 800;
+        color: var(--accent);
+        line-height: 0.95;
+        letter-spacing: -2px;
+        filter: drop-shadow(0 10px 15px #84cc1620);
+      }
+      .hero h1 span {
+        display: block;
+      }
+
+      .typing {
+        margin: 1.5rem 0 0.8rem;
+        font-size: 1.4rem;
+        font-weight: 300;
+        color: #b0b7c5;
+        display: inline-block;
+      }
+      .typing::after {
+        content: "|";
+        margin-left: 6px;
+        animation: blink 1s infinite;
+      }
+      @keyframes blink {
+        0%,
+        50%,
+        100% {
+          opacity: 1;
+        }
+        25%,
+        75% {
+          opacity: 0;
+        }
+      }
+
+      .hero-desc {
+        max-width: 700px;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        line-height: 1.7;
+      }
+
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 2rem 0 0;
+      }
+      .stats div {
+        background: #0e0e0e;
+        border: 1px solid #84cc161a;
+        padding: 0.4rem 1.3rem;
+        border-radius: 40px;
+        font-size: 0.85rem;
+        color: #b0b7c5;
+      }
+
+      /* ===== SECTION TITLE ===== */
+      .section-title {
+        font-size: 2rem;
+        font-weight: 650;
+        color: var(--accent);
+        margin-bottom: 2.5rem;
+        border-left: 5px solid var(--accent);
+        padding-left: 1.3rem;
+      }
+
+      /* ===== GRIDS & CARDS (enhanced descriptions) ===== */
+      .grid {
+        display: grid;
+        gap: 1.8rem;
+      }
+      .skills-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+      .projects-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .card {
+        background: rgba(12, 12, 12, 0.85);
+        border: 1px solid #2a2a2a;
+        padding: 1.8rem;
+        border-radius: 24px;
+        transition: 0.2s ease;
+      }
+      .card:hover {
+        border-color: var(--accent);
+        transform: translateY(-6px);
+        box-shadow: 0 24px 36px -18px #84cc1640;
+        background: #111;
+      }
+      .card h3 {
+        margin-bottom: 0.75rem;
+        font-size: 1.3rem;
+        color: #f0f3f8;
+      }
+      .card p {
+        color: #9ca8b5;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.5;
+      }
+      .stack {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #9ae6b4;
+        border-top: 1px dashed #84cc1625;
+        padding-top: 0.8rem;
+      }
+
+      /* ===== ABOUT SECTION (new) ===== */
+      .about-text {
+        background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #84cc1620;
+        border-radius: 30px;
+        padding: 2rem 2.5rem;
+        max-width: 800px;
+      }
+      .about-text p {
+        color: #ced5e0;
+        font-size: 1.05rem;
+        margin-bottom: 1.2rem;
+      }
+      .about-highlight {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+      .about-highlight span {
+        background: #1a1a1a;
+        border: 1px solid #84cc1625;
+        padding: 0.3rem 1.2rem;
+        border-radius: 40px;
+        font-size: 0.9rem;
+        color: #b9f26c;
+      }
+
+      /* ===== CONTACT GRID (two‑column) ===== */
+      .contact-info {
+        background: rgba(10, 10, 10, 0.85);
+        border: 1px solid #84cc1620;
+        border-radius: 30px;
+        padding: 2.5rem;
+        max-width: 700px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem 2rem;
+      }
+      .contact-info p {
+        font-size: 1rem;
+        color: #ced5e0;
+      }
+      .contact-info a {
+        color: #c6f06c;
+        text-decoration: none;
+        border-bottom: 1px dotted #84cc1690;
+      }
+      .contact-info a:hover {
+        color: #fff;
+      }
+
+      /* ===== FOOTER ===== */
+      footer {
+        text-align: center;
+        padding: 1.8rem;
+        border-top: 1px solid #1f1f1f;
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 700px) {
+        .contact-info {
+          grid-template-columns: 1fr;
+        }
+        .about-text {
+          padding: 1.8rem;
+        }
+        .typing {
+          font-size: 1.2rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .grid-bg,
+        .grid-bg-2 {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- depth layers -->
+    <div class="grid-bg" id="gridLayer1"></div>
+    <div class="grid-bg-2" id="gridLayer2"></div>
+    <div class="fade-layer"></div>
+    <div class="glow" id="glowOrb"></div>
+
+    <header id="header">
+      <div class="logo">gokulraj</div>
+      <nav>
+        <a href="#home" class="active">Home</a>
+        <a href="#about">About</a>
+        <!-- about nav added -->
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <section id="home" class="hero show">
+      <h1><span>GOKUL</span><span>RAJ.</span></h1>
+      <div class="typing" id="typing"></div>
+      <div class="hero-desc">
+        Backend Engineer specializing in scalable Java systems, distributed
+        architecture, and production‑grade APIs.
+      </div>
+      <div class="stats">
+        <div>DSA: 350+ solved</div>
+        <div>14+ Projects</div>
+        <div>Microservices · Design</div>
+      </div>
+    </section>
+
+    <!-- ===== NEW ABOUT SECTION ===== -->
+    <section id="about">
+      <h2 class="section-title">About</h2>
+      <div class="about-text">
+        <p>
+          I'm Gokulraj, a backend engineer with 3+ years of experience designing
+          resilient, high‑throughput systems. I focus on clean architecture,
+          domain‑driven design, and turning complex requirements into
+          maintainable code.
+        </p>
+        <p>
+          Currently deepening my expertise in distributed systems, event‑driven
+          patterns, and cloud‑native development. I enjoy contributing to open
+          source and collaborating on performance optimizations.
+        </p>
+        <div class="about-highlight">
+          <span> Villupuram, India</span>
+          <span> Java · Spring ecosystem</span>
+          <span> Kafka · Docker · PostgreSQL</span>
+          <span> System Design enthusiast</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2 class="section-title">Projects</h2>
+      <div class="grid projects-grid">
+        <div class="card">
+          <h3>Duty Chart</h3>
+          <p>
+            Automated Excel processing (5000+ rows) with pandas – reduced manual
+            effort by 40%.
+          </p>
+          <p>Built intuitive Tkinter GUI for seamless adoption.</p>
+          <div class="stack">Python · Pandas · Tkinter · openpyxl</div>
+        </div>
+        <div class="card">
+          <h3>Portfolio 2026</h3>
+          <p>
+            Dual‑layer 3D grid with mouse‑driven parallax and smooth reveal
+            animations.
+          </p>
+          <p>Accessible and fully responsive.</p>
+          <div class="stack">HTML · CSS · JS · grid effect</div>
+        </div>
+        <div class="card">
+          <h3>TaskCore API</h3>
+          <p>
+            RESTful task management with JWT, role‑based access, and layered
+            architecture.
+          </p>
+          <p>PostgreSQL, Swagger/OpenAPI, integration tests.</p>
+          <div class="stack">Java · Spring Boot · JPA · JWT · JUnit</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2 class="section-title">Skills</h2>
+      <div class="grid skills-grid">
+        <div class="card">
+          <h3>Java</h3>
+          <p>Spring Boot, JPA, concurrency, Streams</p>
+        </div>
+        <div class="card">
+          <h3>Spring Boot</h3>
+          <p>REST APIs, Security, Cloud, AOP</p>
+        </div>
+        <div class="card">
+          <h3>JavaScript</h3>
+          <p>ES6+, async patterns, DOM</p>
+        </div>
+        <div class="card">
+          <h3>MySQL</h3>
+          <p>Indexing, query opt., relational design</p>
+        </div>
+        <div class="card">
+          <h3>Git</h3>
+          <p>branching, rebase, GitHub Actions</p>
+        </div>
+        <div class="card">
+          <h3>DSA</h3>
+          <p>350+ problems, system design basics</p>
+        </div>
+        <div class="card">
+          <h3>Docker</h3>
+          <p>containerization, docker‑compose</p>
+        </div>
+        <div class="card">
+          <h3>Kafka</h3>
+          <p>event streaming, pub‑sub (basics)</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Contact</h2>
+      <div class="contact-info">
+        <p>
+          <strong>Email:</strong>
+          <a href="mailto:gokulraj369k@gmail.com">gokulraj369k@gmail.com</a>
+        </p>
+        <p><strong>Location:</strong> Villupuram, Tamil Nadu</p>
+        <p>
+          <strong>LinkedIn:</strong>
+          <a href="https://www.linkedin.com/in/gokulraj" target="_blank"
+            >linkedin.com/in/gokulraj</a
+          >
+        </p>
+        <p>
+          <strong>GitHub:</strong>
+          <a href="https://github.com/gokulraj" target="_blank"
+            >github.com/gokulraj</a
+          >
+        </p>
+        <p>
+          <strong>LeetCode:</strong>
+          <a href="#" target="_blank">leetcode.com/gokulraj</a>
+        </p>
+        <p>
+          <strong>X (Twitter):</strong>
+          <a href="#" target="_blank">@gokulraj_dev</a>
+        </p>
+      </div>
+    </section>
+
+    <footer>designed & engineered with depth · © 2026 Gokulraj</footer>
+
+    <script>
+      (function () {
+        // ——— TYPING (full sentence) ———
+        const text = "Backend Engineer | Java | Spring Boot | System Design";
+        let i = 0;
+        const typingEl = document.getElementById("typing");
+        typingEl.innerHTML = "";
+        function typeNext() {
+          if (i < text.length) {
+            typingEl.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeNext, 50);
+          }
+        }
+        typeNext();
+
+        // ——— SCROLL REVEAL + ACTIVE NAV (fine‑tuned) ———
+        const sections = document.querySelectorAll("section");
+        const header = document.getElementById("header");
+        const navLinks = document.querySelectorAll("nav a");
+
+        function updateScroll() {
+          const scrollY = window.scrollY;
+
+          // reveal sections with threshold
+          sections.forEach((sec) => {
+            if (scrollY > sec.offsetTop - 380) sec.classList.add("show");
+          });
+
+          // header background
+          header.classList.toggle("scrolled", scrollY > 40);
+
+          // active nav link
+          let current = "";
+          sections.forEach((sec) => {
+            if (scrollY >= sec.offsetTop - 140) current = sec.id;
+          });
+          navLinks.forEach((link) => {
+            const href = link.getAttribute("href").substring(1); // remove #
+            link.classList.toggle("active", href === current);
+          });
+        }
+
+        window.addEventListener("scroll", updateScroll, { passive: true });
+        updateScroll(); // immediate
+
+        // ——— PARALLAX (grid + glow) – efficient rAF ———
+        const layer1 = document.getElementById("gridLayer1");
+        const layer2 = document.getElementById("gridLayer2");
+        const glow = document.getElementById("glowOrb");
+        let rafId = null;
+
+        document.addEventListener("mousemove", (e) => {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2; // -1..1
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+            // layer1: main grid (moderate)
+            layer1.style.transform = `rotateX(68deg) rotateY(${
+              x * 6
+            }deg) translate(${x * 8}px, ${y * 12}px) scale(1.7)`;
+            // layer2: deeper layer (more shift)
+            layer2.style.transform = `rotateX(72deg) rotateY(${
+              x * 4
+            }deg) translate(${x * 16}px, ${y * 24}px) scale(2.2)`;
+            // glow: moves opposite to mouse for floating light
+            const glowX = 45 - x * 12; // % left
+            const glowY = 20 - y * 10; // % top
+            glow.style.transform = `translate(${glowX}%, ${glowY}%) translate(-50%, -20%)`;
+
+            rafId = null;
+          });
+        });
+
+        // reset when mouse leaves window
+        document.addEventListener("mouseleave", () => {
+          layer1.style.transform = `rotateX(68deg) scale(1.7)`;
+          layer2.style.transform = `rotateX(72deg) scale(2.2)`;
+          glow.style.transform = `translate(45%, 20%) translate(-50%, -20%)`;
+        });
+      })();
+    </script>
+  </body>
+</html>
